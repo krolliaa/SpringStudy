@@ -138,5 +138,92 @@ public class App {
 
 对象将在容器初始化的时候一次性全部装配好然后存储在内存当中，容器的初始化就称为注入，当代码中有需要的时候直接从内存中拿来把这个对象拿出来使用就可以了，这种方式虽然占用内存但是效率比较高。大部分应用场景下还是可以接受的。这一整个的装配其实就是`Spring`容器`ApplicationContext`将对象都装好了，要用的时候直接往外拿就可以了，是不是觉得很方便？没错，就是如此方便。
 
+### 1.1 `IOC`之基于`XML`的依赖注入
+
+#### 1.1.1 `set`注入
+
+##### 1.1.1.1 `set`注入之简单类型
+
+通过`setter`方法进行注入，这种方法注入方式简单直观，需要注意的是`Spring`容器注入创建对象，如果没有添加构造器`<constructor-arg>`则需要一个无参构造器，否则无法创建对象，学习过`Java`基础理应知道创建对象是通过构造器创建的，并且有了有参构造器，无参构造器不再默认创建需要手动创建。
+
+`pom.xml`还是跟之前的一样不变，这里不再贴出来。
+
+`applicationContext1.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="student" class="com.zwm.pojo.Student">
+        <property name="name" value="ZhangSan"/>
+        <property name="age" value="18"/>
+    </bean>
+</beans>
+```
+
+测试用的`Student`类：
+
+```java
+package com.zwm.pojo;
+
+public class Student {
+    private String name;
+    private int age;
+
+    public Student() {
+    }
+
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
+    }
+}
+```
+
+`App1`测试类：
+
+```java
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App1 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext1.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("student");
+        System.out.println(student.toString());
+    }
+}
+```
+
+##### 1.1.1.2 `set`注入之引用类型
+
+当指定的对象的属性值为另一对象的时候，也就是属性中包含引用类型数据的时候，此时可以使用`ref`指定他们的引用关系，但是就算是引用类型，这里还是通过`setter`方法注入的：
+
 
 
