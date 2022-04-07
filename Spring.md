@@ -359,5 +359,58 @@ public class App2 {
 }
 ```
 
+#### 1.1.2 构造注入
+
+`Spring`容器初始化时通过有参构造器创建对象：
+
+`applicationContext3.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="school" class="com.zwm.pojo.School">
+        <property name="schoolName" value="华南理工大学"/>
+        <property name="schoolAddress" value="广东省广州市天河区五山路381号"/>
+    </bean>
+    <bean id="student" class="com.zwm.pojo.Student">
+        <constructor-arg name="name" value="kroll"/>
+        <constructor-arg name="age" value="24"/>
+        <constructor-arg name="school" ref="school"/>
+    </bean>
+</beans>
+```
+
+`App3`实体类：
+
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App3 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext3.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("student");
+        System.out.println(student.toString());
+    }
+}
+```
+
+#### 1.1.3 自动注入引用类型
+
+之前的在对引用类型进行注入时采用的是：`ref`方式，这次直接加一个`autowired`就可以自动注入，自动注入有两种，一种是按照名称自动注入，一种是按照类型自动注入，这里先说说前者，其实这种方法的本质还是：`<property name="mySchool" ref="school"/>`
+
+`name`值还是需要跟`setter`方法中的名称所对应，所以本质上是一样的，并没有什么改变：
+
+`applicationContext4.xml`：
+
+
+
+
+
 
 

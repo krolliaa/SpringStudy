@@ -1,3 +1,5 @@
+package com.zwm;
+
 import com.zwm.pojo.Student;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
