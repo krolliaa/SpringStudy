@@ -1,7 +1,11 @@
 package com.zwm.pojo;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class Student {
+    @Value(value = "kroll")
     private String name;
+    @Value(value = "3")
     private int age;
     private School school;
 

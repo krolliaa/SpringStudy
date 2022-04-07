@@ -496,6 +496,145 @@ public class App5 {
 当有多个`Bean`的时候，可以为每一个`Bean`单独配置一个`Spring`配置文件，然后通过`import`合体到一个总配置文件即可：`spring-school.xml` + `spring-student.xml` + `applicationContext6.xml`
 
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="student" class="com.zwm.pojo.Student" autowire="byType">
+        <property name="name" value="kroll"/>
+        <property name="age" value="3"/>
+    </bean>
+</beans>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="school" class="com.zwm.pojo.PrimarySchool">
+        <property name="schoolName" value="华南理工大学"/>
+        <property name="schoolAddress" value="广东省广州市天河区五山路381号"/>
+    </bean>
+</beans>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <import resource="classpath:spring-*"/>
+</beans>
+```
+
+### 1.2 `IOC`之基于注解`Annotation`的`DI`
+
+基于注解的依赖注入不再需要再配置文件中配置`Bean`相关配置信息，只需要在每个`Bean`实体类上加入注解然后在配置文件中添加组件扫描器`context:component-scan`【上下文：组件扫描器】，该组件扫描器可以扫描配置包下的所有注解，使添加的注解产生作用。
+
+`applicationContext7.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <bean id="student" class="com.zwm.pojo.Student"/>
+    <context:component-scan base-package="com.zwm.pojo"/>
+</beans>
+```
+
+`Student`实体类：
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Value;
+
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
+`App7`测试类：
+
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App7 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext7.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("student");
+        System.out.println(student.toString());
+    }
+}
+```
+
+#### 1.2.1 组件扫描器指定多个包的`3`种方式
+
+第一种方式：使用多个`context:component-scan`指定不同包的路径
+
+```xml
+
+```
+
+第二种方式：使用分隔符指定多个不同包的路径，分隔符可以使用`,`也可以使用`;`和`[空格]`
+
+```xml
+
+```
+
+第三种方式：使用`base-package`指定到父包涵盖掉需要扫描的注解，虽然快捷方便了，但是需要扫描的包就多了，是否选择此类型看具体需求
+
+```xml
 ```
 
 
