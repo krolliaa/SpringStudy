@@ -225,5 +225,139 @@ public class App1 {
 
 当指定的对象的属性值为另一对象的时候，也就是属性中包含引用类型数据的时候，此时可以使用`ref`指定他们的引用关系，但是就算是引用类型，这里还是通过`setter`方法注入的：
 
+`applicationContext`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="school" class="com.zwm.pojo.School">
+        <property name="schoolName" value="华南理工大学"/>
+        <property name="schoolAddress" value="广东省广州市天河区五山路381号"/>
+    </bean>
+    <bean id="student" class="com.zwm.pojo.Student">
+        <property name="name" value="kroll"/>
+        <property name="age" value="24"/>
+        <property name="mySchool" ref="school"/>
+    </bean>
+</beans>
+```
+
+`School`实体类：
+
+```java
+package com.zwm.pojo;
+
+public class School {
+    private String schoolName;
+    private String schoolAddress;
+
+    public School() {
+    }
+
+    public School(String schoolName, String schoolAddress) {
+        this.schoolName = schoolName;
+        this.schoolAddress = schoolAddress;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getSchoolAddress() {
+        return schoolAddress;
+    }
+
+    public void setSchoolAddress(String schoolAddress) {
+        this.schoolAddress = schoolAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "School{" +
+                "schoolName='" + schoolName + '\'' +
+                ", schoolAddress='" + schoolAddress + '\'' +
+                '}';
+    }
+}
+```
+
+`Student`实体类：
+
+```java
+package com.zwm.pojo;
+
+public class Student {
+    private String name;
+    private int age;
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
+`App`测试类：
+
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App2 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext2.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("student");
+        System.out.println(student.toString());
+    }
+}
+```
+
 
 
