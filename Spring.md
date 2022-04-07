@@ -650,5 +650,134 @@ public class App7 {
 
 `@Compoent`常用于创建没有什么具体含义的普通`Bean`对象，除此之外，创建对象的注解还有：`@Repository`还有`@Service`以及`@Controller`，这三个的区别就在于：`@Repository`常用于创建持久层的对象，`@Service`常用于创建业务逻辑层的对象，`@Controller`常用于创建用户访问层的对象，这三个注解其实就是`@Component`的细化注解，包括了持久层、业务逻辑层以及用户访问层的对象注解。
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <context:component-scan base-package="com.zwm.pojo"/>
+</beans>
+```
 
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App8 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext8.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("myStudent");
+        System.out.println(student.toString());
+    }
+}
+```
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "myStudent")
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "school")
+public class School {
+    private String schoolName;
+    private String schoolAddress;
+
+    public School() {
+    }
+
+    public School(String schoolName, String schoolAddress) {
+        this.schoolName = schoolName;
+        this.schoolAddress = schoolAddress;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    @Value(value = "华南理工大学")
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getSchoolAddress() {
+        return schoolAddress;
+    }
+
+    @Value(value = "广东省广州市天河区五山路381号")
+    public void setSchoolAddress(String schoolAddress) {
+        this.schoolAddress = schoolAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "School{" +
+                "schoolName='" + schoolName + '\'' +
+                ", schoolAddress='" + schoolAddress + '\'' +
+                '}';
+    }
+}
+```
 
