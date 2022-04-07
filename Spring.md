@@ -781,7 +781,7 @@ public class School {
 }
 ```
 
-#### 1.2.3 属性赋值的注解
+#### 1.2.3 基本数据类型赋值的注解
 
 具体用法为：直接在要赋值的属性上使用`@Value(value = "xxxxxx")`即可，属性值`value`可以省略，类中无需`setter`方法就可以直接赋值，当然也可以有`setter`方法，然后你也可以直接在`setter`方法上直接使用`@Value(value = "xxxxxx")`，如果属性上面和`setter`方法上面都有`@Value`注解，以`setter`方法上的注解为基准
 
