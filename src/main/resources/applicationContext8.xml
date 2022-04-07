@@ -3,6 +3,13 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
     <bean id="student" class="com.zwm.pojo.Student"/>
-    <bean id="school" class="com.zwm.pojo.School"/>
+    <!--使用一条条列举扫描-->
     <context:component-scan base-package="com.zwm.pojo"/>
+    <context:component-scan base-package="com.zwm.service"/>
+    <!--使用分隔符添加组件扫描器 逗号 分号 空格-->
+    <context:component-scan base-package="com.zwm.pojo,com.zwm.service"/>
+    <context:component-scan base-package="com.zwm.pojo;com.zwm.service"/>
+    <context:component-scan base-package="com.zwm.pojo com.zwm.service"/>
+    <!--使用父类扫描多个包-->
+    <context:component-scan base-package="com.zwm"/>
 </beans>

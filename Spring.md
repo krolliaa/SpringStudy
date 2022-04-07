@@ -622,19 +622,26 @@ public class App7 {
 
 第一种方式：使用多个`context:component-scan`指定不同包的路径
 
-```xml
-
-```
-
 第二种方式：使用分隔符指定多个不同包的路径，分隔符可以使用`,`也可以使用`;`和`[空格]`
-
-```xml
-
-```
 
 第三种方式：使用`base-package`指定到父包涵盖掉需要扫描的注解，虽然快捷方便了，但是需要扫描的包就多了，是否选择此类型看具体需求
 
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <bean id="student" class="com.zwm.pojo.Student"/>
+    <!--使用一条条列举扫描-->
+    <context:component-scan base-package="com.zwm.pojo"/>
+    <context:component-scan base-package="com.zwm.service"/>
+    <!--使用分隔符添加组件扫描器 逗号 分号 空格-->
+    <context:component-scan base-package="com.zwm.pojo,com.zwm.service"/>
+    <context:component-scan base-package="com.zwm.pojo;com.zwm.service"/>
+    <context:component-scan base-package="com.zwm.pojo com.zwm.service"/>
+    <!--使用父类扫描多个包-->
+    <context:component-scan base-package="com.zwm"/>
+</beans>
 ```
 
 
