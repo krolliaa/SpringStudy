@@ -781,3 +781,67 @@ public class School {
 }
 ```
 
+#### 1.2.3 属性赋值的注解
+
+具体用法为：直接在要赋值的属性上使用`@Value(value = "xxxxxx")`即可，属性值`value`可以省略，类中无需`setter`方法就可以直接赋值，当然也可以有`setter`方法，然后你也可以直接在`setter`方法上直接使用`@Value(value = "xxxxxx")`，如果属性上面和`setter`方法上面都有`@Value`注解，以`setter`方法上的注解为基准
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "myStudent")
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Value(value = "乌拉！")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Value(value = "100")
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
