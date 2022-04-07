@@ -400,7 +400,7 @@ public class App3 {
 }
 ```
 
-#### 1.1.3 自动注入引用类型
+#### 1.1.3 自动注入引用类型`byName`
 
 之前的在对引用类型进行注入时采用的是：`ref`方式，这次直接加一个`autowired`就可以自动注入，自动注入有两种，一种是按照名称自动注入，一种是按照类型自动注入，这里先说说前者，其实这种方法的本质还是：`<property name="mySchool" ref="school"/>`
 
@@ -442,9 +442,54 @@ public class App4 {
 }
 ```
 
+#### 1.1.4 自动注入引用类型`byType`
 
+该方式通过类路径去寻找引用数据类型的配置，路径匹配不一定要一模一样，同源即可，要么是实体类本身要么存在继承关系要么存在实现关系：
 
+`applicationContext5.xml`：
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="school" class="com.zwm.pojo.PrimarySchool">
+        <property name="schoolName" value="华南理工大学"/>
+        <property name="schoolAddress" value="广东省广州市天河区五山路381号"/>
+    </bean>
+    <bean id="student" class="com.zwm.pojo.Student" autowire="byType">
+        <property name="name" value="kroll"/>
+        <property name="age" value="3"/>
+    </bean>
+</beans>
+```
+
+`PrimarySchool`继承`School`的子类：
+
+```java
+package com.zwm.pojo;
+
+public class PrimarySchool extends School {
+}
+```
+
+`App5`实体类：
+
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App5 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext5.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("student");
+        System.out.println(student.toString());
+    }
+}
+```
 
 
 
