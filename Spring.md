@@ -491,5 +491,14 @@ public class App5 {
 }
 ```
 
+#### 1.1.5 总配置文件
+
+当有多个`Bean`的时候，可以为每一个`Bean`单独配置一个`Spring`配置文件，然后通过`import`合体到一个总配置文件即可：`spring-school.xml` + `spring-student.xml` + `applicationContext6.xml`
+
+```xml
+```
+
+
+
 
 
