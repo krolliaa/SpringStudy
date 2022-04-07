@@ -408,6 +408,40 @@ public class App3 {
 
 `applicationContext4.xml`：
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="mySchool" class="com.zwm.pojo.School">
+        <property name="schoolName" value="华南理工大学"/>
+        <property name="schoolAddress" value="广东省广州市天河区五山路381号"/>
+    </bean>
+    <bean id="student" class="com.zwm.pojo.Student" autowire="byName">
+        <property name="name" value="kroll"/>
+        <property name="age" value="3"/>
+    </bean>
+</beans>
+```
+
+`App4`实体类：
+
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App4 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext4.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Student student = (Student) applicationContext.getBean("student");
+        System.out.println(student.toString());
+    }
+}
+```
+
 
 
 
