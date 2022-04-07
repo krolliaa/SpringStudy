@@ -644,7 +644,11 @@ public class App7 {
 </beans>
 ```
 
+#### 1.2.2 创建对象的注解
 
+具体用法为：`@Component(value = "xxxxxx")`，这里的`value`值相当于`xml`中`<bean>`中的`id`，可以不指定默认就是类名的小写名称。
+
+`@Compoent`常用于创建没有什么具体含义的普通`Bean`对象，除此之外，创建对象的注解还有：`@Repository`还有`@Service`以及`@Controller`，这三个的区别就在于：`@Repository`常用于创建持久层的对象，`@Service`常用于创建业务逻辑层的对象，`@Controller`常用于创建用户访问层的对象，这三个注解其实就是`@Component`的细化注解，包括了持久层、业务逻辑层以及用户访问层的对象注解。
 
 
 
