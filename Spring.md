@@ -1141,3 +1141,141 @@ public class Student {
 }
 ```
 
+#### 1.2.5 自动注入`@Resource`
+
+`@Resource`是`JDK`提供的，默认是按照`byName`的方式进行注入，若名称无法注入就按照`byType`的方式进行注入，这跟`@Autowired`恰好相反。
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+@Component(value = "myStudent")
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    //@Autowired(required = false)
+    //@Qualifier(value = "mySchoollllllll")
+    @Resource(name = "mySchool")
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Value(value = "乌拉！")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Value(value = "100")
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
+### 1.3 比较两种依赖注入的方式
+
+1. 基于`XML`依赖注入的方式
+
+   > - 优点：代码和配置相分离，修改了`XML`配置文件无需重新编译，只需要重启服务器就会加载新的配置信息
+   > - 缺点：不方便不直观编写麻烦，在大型项目上使用将变得非常复杂
+
+2. 基于`Annotation`依赖注入的方式
+
+   > - 优点：方便直观高效【代码量少，并不用像`XML`那样书写大量配置信息】
+   > - 缺点：直接写到源代码中，若需要修改则需要重新编译
+
+【注：经常需要修改的配置使用`Annotation`依赖注入，不经常修改的不动的使用`XML`进行依赖注入 ---> 选用哪个的关键点在于是否需要修改大量的源代码】
+
+## 2. `AOP(Aspect Oriented Programming)`面向切面编程
+
+`AOP`就是采用动态代理实现的，它是可以在运行期通过动态代理实现程序功能统一维护的一种技术，想要搞明白动态代理，就需要先搞明白`Java`反射机制。其优点无非两点：一是减少重复二是专注业务。
+
+所谓的切面就是由交叉业务代码封装二厂的，然后织入到主业务逻辑代码中。而交叉业务呢指的是通用的与主业务逻辑无关，如安全检查、事务、日志、缓存等。利用好`AOP`可以对业务逻辑的各个部分进行隔离拆分，从而降低了各个业务逻辑的耦合度，提高了程序的重用性，因为对业务逻辑的各个部分进行了隔离，那么一组一组的人员可以负责开发各个业务逻辑部分，这样就大大提升了开发效率。如果不使用`AOP`，就会出现主业务逻辑代码和非业务逻辑代码相互纠缠，混合在一起的情况。这样导致主业务逻辑变得很不清晰透彻，非常冗余，还降低了开发的效率等问题。
+
+`AspectJ`很好的实现了`AOP`概念，并且简单快捷还支持注解开发，`Spring`才不傻傻的花费大量的功夫自己搞一套，所以`Spring`将`AspectJ`直接引入到了自己的框架中。
+
+注：面向切面编程`AOP`只是面向对象编程`OOP`的一种补充
+
+### 2.1 `AOP`相关术语
+
+> 1. 切面`Aspect`：泛指交叉业务逻辑对主业务逻辑的增强
+> 2. 连接点`JoinPoint`：可以被切面织入的具体方法，通常业务接口中的方法都是连接点
+> 3. 切入点`Pointcut`：一个或者多个连接点，可以被切面织入的具体方法的集合
+> 4. 目标对象`Target`：指要被增强的对象也就是包含主业务逻辑的类的对象，对象的模板即类称为目标类也就是包含主业务逻辑的类
+> 5. 通知`Advice`：切面执行的时间
+
+【注：若某个方法被`final`关键字修饰则是无法作为连接点或者切入点的，因为被`final`关键字修饰的方法/属性都是完美的，不可更改的，所以也就无法增强，不能被增强也就无法作为连接点】
+
+### 2.2 `AspectJ`切入点表达式
+
+切入点表达式跟定义方法是一样的：`public int com.zwm.test.getSum(int a, int b) throws Exception{}`，定义切入点有三部分是必须定义的：返回值类型 方法名 参数
+
+- 访问权限修饰符【可选】
+- 返回值类型【必须】
+- 包名【可选】
+- 方法名【必须，包括参数类型和参数个数】
+- 异常【可选】
+
+`execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern) throws-pattern)`
+
+举例：
+
+```java
+指定切入点为任意公共方法： execution(public * *(..))
+指定切入点为任意以set打头的方法名的方法： execution(* set*(..))
+指定切入点为 com.xyz.service 包下任意类的任意方法： execution(* com.xyz.service.*.*(..))
+指定切入点为 com.xyz.service 包及其子包下任意类的任意方法： execution(* com.xyz.service..*.*(..))
+指定切入点为任意一级包下或者一级包下所有类包括子包的`service`包下的任意类的任意方法： execution(* *..service.*.*(..))
+指定切入点为任意一级包下所有service包下任意类的任意方法： execution(* *.service.*.*(..))
+指定切入点为任意一级包下所有ISomeService接口中的任意方法： execution(* *.ISomeService.*(..))
+指定切入点为 com.xyz.service.IAccountService 下所有方法： execution(* com.xyz.service.IAccountService.*(..))
+指定切入点为 IAccountService 若为接口则表示该接口及其实现类任意方法，IAccountService若为类
+表示该类及其子类任意方法： execution(* *.IAccountService+.*(..))
+指定切入点为所有的joke()方法，且第一个参数数据类型必须为String，第二个为int，如果参数类型是java.lang包下的，则可以省略全类名，如果不是则必须使用全限定类名，比如第一个参数数据类型是List，则需要描述为： execution(* *.joke(java.util.List, int))
+execution(* *.joke(String, int))
+指定切入点为指定所有的joke()方法为切入点，且一共只有两个参数，第一个参数数据类型必须为
+String，第二个参数数据类型为任意数据类型： execution(* joke(String,..))
+指定切入点为指定所有的joke()方法为切入点，只有一个参数且必须为Object类型： execution(* *.joke(Object))
+指定切入点为指定所有的joke()方法为切入点，只有一个参数，数据类型可以为Object类型也可以是其子类: execution(* *.joke(Object+))
+```
+
