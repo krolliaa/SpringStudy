@@ -1075,3 +1075,69 @@ public class School {
 }
 ```
 
+关于`@Autowired`有一个默认值`required`默认值为`true`，表示如果`Spring`容器匹配对象属性的时候不匹配上就终止程序运行然后抛出异常，如果改为`false`表示该引用数据类型的属性匹配不上，程序照常运行，没有匹配上的属性值为`null`
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "myStudent")
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    @Autowired(required = false)
+    @Qualifier(value = "mySchoollllllll")
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Value(value = "乌拉！")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Value(value = "100")
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+

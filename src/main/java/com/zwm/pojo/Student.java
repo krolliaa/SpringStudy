@@ -11,8 +11,8 @@ public class Student {
     private String name;
     @Value(value = "3")
     private int age;
-    @Autowired
-    @Qualifier(value = "mySchool")
+    @Autowired(required = false)
+    @Qualifier(value = "mySchoollllllll")
     private School school;
 
     public Student() {
