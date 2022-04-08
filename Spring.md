@@ -1279,3 +1279,172 @@ String，第二个参数数据类型为任意数据类型： execution(* joke(St
 指定切入点为指定所有的joke()方法为切入点，只有一个参数，数据类型可以为Object类型也可以是其子类: execution(* *.joke(Object+))
 ```
 
+### 2.3 `AspectJ`的五种通知类型
+
+> 1. 前置通知
+> 2. 后置通知
+> 3. 环绕通知
+> 4. 异常通知
+> 5. 最终通知
+
+### 2.4 `AspectJ`基于注解的面向切面编程的实现
+
+#### 2.4.1 前置通知`@Before`
+
+`pom.xml`引入`AOP`依赖：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.zwm</groupId>
+    <artifactId>SpringStudy</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>5.3.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.2.12.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.2.12.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>
+```
+
+`SomeService`主业务逻辑代码接口实现：
+
+```java
+package com.zwm.service;
+
+public interface SomeService {
+    public abstract void doSome(String name, int age);
+
+    public abstract void doOther();
+}
+```
+
+`SomeServiceImpl`接口实现类：
+
+```java
+package com.zwm.service.impl;
+
+import com.zwm.service.SomeService;
+
+public class SomeServiceImpl implements SomeService {
+    @Override
+    public void doSome(String name, int age) {
+        System.out.println("========SomeService的doSome()方法========");
+    }
+
+    @Override
+    public void doOther() {
+        System.out.println("========SomeService的doOther()方法========");
+    }
+}
+```
+
+`MyAspectBefore`前置通知：
+
+```java
+package com.zwm.aspect;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class MyBeforeAspect {
+    @Before(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    public void myBefore(JoinPoint joinPoint) {
+        System.out.println("前置通知获取方法全类名：" + joinPoint.getSignature());
+    }
+}
+```
+
+`ApplicationContext14.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:component-scan base-package="com.zwm"/>
+</beans>
+```
+
+`App14`测试类：
+
+```java
+package com.zwm;
+
+import com.zwm.service.SomeService;
+import com.zwm.service.impl.SomeServiceImpl;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App14 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext14.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        SomeService someService = (SomeServiceImpl) applicationContext.getBean("someServiceImpl");
+        someService.doSome("ABC", 3);
+    }
+}
+```
+
+#### 2.4.2 后置通知`@AfterReturning`
+
+
+
+#### 2.4.3 环绕通知`@Around`
+
+
+
+#### 2.4.4 异常通知`@AfterThrowing`
+
+
+
+#### 2.4.5 最终通知`@After`
+
