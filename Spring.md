@@ -845,7 +845,7 @@ public class Student {
 }
 ```
 
-#### 1.2.4 引用数据类型的注解
+#### 1.2.4 引用数据类型的注解`@Autowired + @Qualifier`
 
 要想在引用数据类型上使用注解，可以使用`@Autowired`，该注解默认是按照`byType`方式进行的，但是这里有一个跟`xml`不一样的点就是，基于`xml`的依赖注入只要是同源的我们配父类或者接口就可以，在`xml`里头，会自动的去找继承父类的子类以及实现接口的实现类。
 
@@ -922,6 +922,119 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component(value = "school")
+public class School {
+    private String schoolName;
+    private String schoolAddress;
+
+    public School() {
+    }
+
+    public School(String schoolName, String schoolAddress) {
+        this.schoolName = schoolName;
+        this.schoolAddress = schoolAddress;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    @Value(value = "华南理工大学")
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getSchoolAddress() {
+        return schoolAddress;
+    }
+
+    @Value(value = "广东省广州市天河区五山路381号")
+    public void setSchoolAddress(String schoolAddress) {
+        this.schoolAddress = schoolAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "School{" +
+                "schoolName='" + schoolName + '\'' +
+                ", schoolAddress='" + schoolAddress + '\'' +
+                '}';
+    }
+}
+```
+
+指定使用`byName`的方式进行自动注入，没找到的话不会自动转化为`byType`方式：
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "myStudent")
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    @Autowired
+    @Qualifier(value = "mySchool")
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Value(value = "乌拉！")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Value(value = "100")
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "mySchool")
 public class School {
     private String schoolName;
     private String schoolAddress;

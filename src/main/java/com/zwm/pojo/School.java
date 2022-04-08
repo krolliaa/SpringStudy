@@ -3,7 +3,7 @@ package com.zwm.pojo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component(value = "school")
+@Component(value = "mySchool")
 public class School {
     private String schoolName;
     private String schoolAddress;
