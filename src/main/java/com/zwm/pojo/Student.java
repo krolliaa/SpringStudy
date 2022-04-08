@@ -1,5 +1,6 @@
 package com.zwm.pojo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ public class Student {
     private String name;
     @Value(value = "3")
     private int age;
+    @Autowired
     private School school;
 
     public Student() {

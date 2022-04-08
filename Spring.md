@@ -845,3 +845,120 @@ public class Student {
 }
 ```
 
+#### 1.2.4 引用数据类型的注解
+
+要想在引用数据类型上使用注解，可以使用`@Autowired`，该注解默认是按照`byType`方式进行的，但是这里有一个跟`xml`不一样的点就是，基于`xml`的依赖注入只要是同源的我们配父类或者接口就可以，在`xml`里头，会自动的去找继承父类的子类以及实现接口的实现类。
+
+但是注解的依赖注入不一样，即使是有同源的，只要对象中的对象属性不是特定的那个类就不回赋予属性，比如这里的`private School school`然后给予一个`@Autowired`注解，此时有另外一个继承了`School`类的子类`PrimarySchool`是`School`的子类，在`School`类中并不给属性赋值，但是在`PrimartSchool`，你觉得他会自动寻找子类吗？其实并不会，默认是按照`byType`，但是它只认`byType`
+
+如果`byType`方式注入不成，就会转换成`byName`的方式注入。
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "myStudent")
+public class Student {
+    @Value(value = "kroll")
+    private String name;
+    @Value(value = "3")
+    private int age;
+    @Autowired
+    private School school;
+
+    public Student() {
+    }
+
+    public Student(String name, int age, School school) {
+        this.name = name;
+        this.age = age;
+        this.school = school;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Value(value = "乌拉！")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Value(value = "100")
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setMySchool(School school) {
+        this.school = school;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", school=" + school +
+                '}';
+    }
+}
+```
+
+```java
+package com.zwm.pojo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component(value = "school")
+public class School {
+    private String schoolName;
+    private String schoolAddress;
+
+    public School() {
+    }
+
+    public School(String schoolName, String schoolAddress) {
+        this.schoolName = schoolName;
+        this.schoolAddress = schoolAddress;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    @Value(value = "华南理工大学")
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getSchoolAddress() {
+        return schoolAddress;
+    }
+
+    @Value(value = "广东省广州市天河区五山路381号")
+    public void setSchoolAddress(String schoolAddress) {
+        this.schoolAddress = schoolAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "School{" +
+                "schoolName='" + schoolName + '\'' +
+                ", schoolAddress='" + schoolAddress + '\'' +
+                '}';
+    }
+}
+```
+
