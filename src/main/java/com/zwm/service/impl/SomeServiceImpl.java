@@ -17,6 +17,8 @@ public class SomeServiceImpl implements SomeService {
 
     @Override
     public Student doSome(String name, int age) {
+        int a = 0;
+        System.out.println(1 / a);
         System.out.println("========SomeService的doSome()方法========");
         Student student = new Student();
         student.setName(name);

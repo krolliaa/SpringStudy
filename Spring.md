@@ -1510,11 +1510,120 @@ public class App15 {
 
 #### 2.4.3 环绕通知`@Around`
 
+`applicationContext16.xml`：
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:component-scan base-package="com.zwm"/>
+</beans>
+```
+
+`App16`测试类：
+
+```java
+package com.zwm;
+
+import com.zwm.service.SomeService;
+import com.zwm.service.impl.SomeServiceImpl;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App16 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext16.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        SomeService someService = (SomeServiceImpl) applicationContext.getBean("someServiceImpl");
+        Object result = (Object) someService.doSome("ABC", 3);
+        System.out.println(result);
+    }
+}
+```
+
+`MyAroundAspect`切面类：
+
+```java
+package com.zwm.aspect;
+
+import com.zwm.pojo.Student;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Aspect
+@Component
+public class MyAroundAspect {
+    @Around(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    public Object MyAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        Object result = null;
+        System.out.println("环绕通知方法执行前的时间：" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        System.out.println("环绕通知获取全类名：" + proceedingJoinPoint.getSignature());
+        System.out.println("环绕通知获取方法名：" + proceedingJoinPoint.getSignature().getName());
+        Object[] args = proceedingJoinPoint.getArgs();
+        String name = "";
+        if (args != null && args.length > 0) {
+            for (Object arg : args) System.out.println("环绕通知获取方法形式参数：" + arg);
+            name = (String) args[0];
+        }
+        if ("ABC".equals(name)) {
+            System.out.print("环绕通知执行方法，返回方法执行结果保存在 result 中：");
+            result = proceedingJoinPoint.proceed(args);
+        }
+        System.out.print("方法执行完毕，可以修改方法的返回结果：");
+        if (result != null && result instanceof Student) ((Student) result).setName("DEF");
+        return result;
+    }
+}
+```
+
+环绕通知是众多通知之神，它可以干其它所有通知的事情，非常之强大，所以也经常使用到环绕通知。
 
 #### 2.4.4 异常通知`@AfterThrowing`
 
+```java
+package com.zwm.aspect;
 
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class MyAfterThrowableAspect {
+    @AfterThrowing(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))", throwing = "throwable")
+    public void myAfterThrowable(Throwable throwable) throws InterruptedException {
+        System.out.println("异常通知，方法执行抛出异常前执行：" + throwable.getMessage());
+        Thread.sleep(3000);
+    }
+}
+```
 
 #### 2.4.5 最终通知`@After`
+
+总是会执行的通知就是最终通知：
+
+```java
+package com.zwm.aspect;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class MyAfterAspect {
+    @After(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    public void myAfterThrowable() {
+        System.out.println("最终通知，最后且总是会执行的通知");
+    }
+}
+```
 
