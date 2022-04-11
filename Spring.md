@@ -1651,3 +1651,12 @@ public class MyPointCut {
 }
 ```
 
+## 3. `Spring`集成`MyBatis`
+
+### 3.1 使用`JDBC`访问数据库
+
+`JDBCReview`：
+
+```java
+```
+
