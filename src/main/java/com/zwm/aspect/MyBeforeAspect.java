@@ -10,7 +10,7 @@ import java.util.Date;
 @Aspect
 @Component
 public class MyBeforeAspect {
-    @Before(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    //@Before(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
     public void myBefore(JoinPoint joinPoint) {
         System.out.println("前置通知获取方法全类名：" + joinPoint.getSignature());
         System.out.println("前置通知获取方法名：" + joinPoint.getSignature().getName());

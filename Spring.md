@@ -1436,7 +1436,77 @@ public class App14 {
 
 #### 2.4.2 后置通知`@AfterReturning`
 
+`MyAfterReturning`：
 
+```java
+package com.zwm.aspect;
+
+import com.zwm.pojo.Student;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Aspect
+@Component
+public class MyAfterReturningAspect {
+    @AfterReturning(value = "execution(* com.zwm.service.impl.SomeServiceImpl.*(..))", returning = "student")
+    public void myAfterReturning(JoinPoint joinPoint, Student student) {
+        System.out.println("该方法的全类名 - 后置通知获取：" + joinPoint.getSignature());
+        System.out.println("该方法的方法名 - 后置通知获取：" + joinPoint.getSignature().getName());
+        Object[] args = joinPoint.getArgs();
+        if (args != null) {
+            for (Object arg : args) {
+                System.out.println("该方法的形式参数：" + arg);
+            }
+        }
+        System.out.println("后置通知：doSome()返回参数值后打印当前时间" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        System.out.println("在后置通知执行方法之前的 student 数据：" + student.toString());
+        student.setName("DEF");
+        System.out.println("在后置通知执行方法之前的 student 数据：" + student.toString());
+    }
+}
+```
+
+`applicationContext15.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:component-scan base-package="com.zwm"/>
+</beans>
+```
+
+`App15`测试类：
+
+```java
+package com.zwm;
+
+import com.zwm.pojo.Student;
+import com.zwm.service.SomeService;
+import com.zwm.service.impl.SomeServiceImpl;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class App15 {
+    public static void main(String[] args) {
+        String springConfig = "applicationContext15.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        SomeService someService = (SomeServiceImpl) applicationContext.getBean("someServiceImpl");
+        Student student = someService.doSome("ABC", 3);
+        System.out.println("执行 doSome 方法返回的数据：" + student.toString());
+    }
+}
+```
+
+可以看到后置通知的方法执行顺序是：执行方法位置 ---> 后置通知位置 ---> 调用方法位置
 
 #### 2.4.3 环绕通知`@Around`
 

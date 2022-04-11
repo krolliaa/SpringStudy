@@ -1,5 +1,6 @@
 package com.zwm.service.impl;
 
+import com.zwm.pojo.Student;
 import com.zwm.service.SomeService;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,12 @@ public class SomeServiceImpl implements SomeService {
     }
 
     @Override
-    public void doSome(String name, int age) {
+    public Student doSome(String name, int age) {
         System.out.println("========SomeService的doSome()方法========");
+        Student student = new Student();
+        student.setName(name);
+        student.setAge(age);
+        return student;
     }
 
     @Override
