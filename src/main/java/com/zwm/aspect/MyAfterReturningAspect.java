@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Aspect
-@Component
+//@Component
 public class MyAfterReturningAspect {
     @AfterReturning(value = "execution(* com.zwm.service.impl.SomeServiceImpl.*(..))", returning = "student")
     public void myAfterReturning(JoinPoint joinPoint, Student student) {
