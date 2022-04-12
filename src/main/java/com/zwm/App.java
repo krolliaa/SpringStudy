@@ -12,7 +12,7 @@ import java.util.Date;
 public class App {
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        String springConfig = "applicationContext.xml";
+        String springConfig = "applicationContext19.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
         SomeServiceImpl someService0 = (SomeServiceImpl) applicationContext.getBean("someService0");
         SomeServiceImpl someService1 = (SomeServiceImpl) applicationContext.getBean("someService1");
