@@ -1691,3 +1691,124 @@ public class App19 {
 }
 ```
 
+### 3.2 使用`MyBatis`访问数据库
+
+`User`实体类【这里使用了`lombok`】：
+
+```java
+package com.zwm.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    private int id;
+    private String name;
+}
+```
+
+`UserMapper`接口：
+
+```java
+package com.zwm.mapper;
+
+import com.zwm.pojo.User;
+
+import java.util.List;
+
+public interface UserMapper {
+    public abstract List<User> selectAllUsers();
+}
+```
+
+`UserMapper.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwm.mapper.UserMapper">
+    <select id="selectAllUsers" resultType="user">
+        select * from student
+    </select>
+</mapper>
+```
+
+`jdbc.properties`：
+
+```properties
+jdbc.driver=com.mysql.cj.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/ssm?useSSL=false&serverTimezone=Asia/Shanghai
+jdbc.username=root
+jdbc.password=123456
+```
+
+`mybatis.xml`配置文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="jdbc.properties"/>
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+    <typeAliases>
+        <typeAlias type="com.zwm.pojo.User" alias="user"/>
+    </typeAliases>
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="JDBC"></transactionManager>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="mapper/userMapper.xml"/>
+    </mappers>
+</configuration>
+```
+
+`App20`测试类：
+
+```java
+package com.zwm;
+
+import com.zwm.mapper.UserMapper;
+import com.zwm.pojo.User;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+public class App20 {
+    public static void main(String[] args) throws IOException {
+        String mybatisConfig = "mybatis.xml";
+        InputStream mybatisInputStream = Resources.getResourceAsStream(mybatisConfig);
+        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(mybatisInputStream);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<User> userList = userMapper.selectAllUsers();
+        for(User user : userList) System.out.println(user.toString());
+    }
+}
+```
+
+
+
