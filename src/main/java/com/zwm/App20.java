@@ -20,6 +20,6 @@ public class App20 {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         List<User> userList = userMapper.selectAllUsers();
-        for(User user : userList) System.out.println(user.toString());
+        for (User user : userList) System.out.println(user.toString());
     }
 }
