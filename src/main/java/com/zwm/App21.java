@@ -12,8 +12,10 @@ public class App21 {
     public static void main(String[] args) throws IOException {
         String springConfig = "applicationContext19.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        Object[] names = applicationContext.getBeanDefinitionNames();
+        for (Object name : names) System.out.println(name);
         UserService userService = (UserService) applicationContext.getBean("userService");
         List<User> userList = userService.selectAllUsers();
-        for(User user : userList) System.out.println(user.toString());
+        for (User user : userList) System.out.println(user.toString());
     }
 }

@@ -2353,3 +2353,68 @@ public class App22 {
 </beans>
 ```
 
+## 5. `Spring`与`Web`
+
+在`web`项目中，按逻辑讲，如果每次用到`Spring`的时候就创建一个`Spring`容器势必会造成很大的资源浪费，如何避免呢？所以在创建`web`项目的时候，每次启动项目创建`ServletContext`初始化的时候就创建`Spring`容器，就需要在`web.xml`中配置这些信息，使得`Spring`容器有且只有一个并且在整个`web`项目中都可以使用到
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <display-name>Web Application</display-name>
+    <!--注册一个Servlet-->
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>com.zwm.controller.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/registerServlet</url-pattern>
+    </servlet-mapping>
+    <!--监听Spring的applicationContext，Web项目启动时就创建容器-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+</web-app>
+```
+
+```java
+package com.zwm.controller;
+
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class RegisterServlet extends HttpServlet {
+
+    private WebApplicationContext webApplicationContext;
+
+    @Override
+    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        doGet(httpServletRequest, httpServletResponse);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        String key = WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE;
+        webApplicationContext = (WebApplicationContext) this.getServletContext().getAttribute(key);
+        webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
+        String strName = httpServletRequest.getParameter("name");
+        String strAge = httpServletRequest.getParameter("age");
+        System.out.println("容器信息：" + webApplicationContext);
+        httpServletRequest.getRequestDispatcher("/result.jsp").forward(httpServletRequest, httpServletResponse);
+    }
+}
+```
+
