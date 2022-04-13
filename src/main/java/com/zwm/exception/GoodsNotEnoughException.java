@@ -1,4 +1,4 @@
-package com.zwm.execption;
+package com.zwm.exception;
 
 public class GoodsNotEnoughException extends Throwable {
 

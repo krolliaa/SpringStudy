@@ -2141,8 +2141,8 @@ public interface GoodsMapper {
 ```java
 package com.zwm.service;
 
-import com.zwm.execption.GoodsNotEnoughException;
-import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.exception.GoodsNotEnoughException;
+import com.zwm.exception.GoodsNullPointerException;
 import com.zwm.pojo.Goods;
 
 import java.util.List;
@@ -2161,8 +2161,8 @@ public interface GoodsService {
 ```java
 package com.zwm.service.impl;
 
-import com.zwm.execption.GoodsNotEnoughException;
-import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.exception.GoodsNotEnoughException;
+import com.zwm.exception.GoodsNullPointerException;
 import com.zwm.mapper.GoodsMapper;
 import com.zwm.pojo.Goods;
 import com.zwm.service.GoodsService;
@@ -2216,8 +2216,8 @@ public class GoodsServiceImpl implements GoodsService {
 ```java
 package com.zwm;
 
-import com.zwm.execption.GoodsNotEnoughException;
-import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.exception.GoodsNotEnoughException;
+import com.zwm.exception.GoodsNullPointerException;
 import com.zwm.pojo.Goods;
 import com.zwm.service.GoodsService;
 import org.springframework.context.ApplicationContext;
@@ -2286,3 +2286,70 @@ public class App22 {
 ```
 
 这些个代码的具体含义就是如果商品数量不够传递的，就无法更改价格，因为有事务管理所以会自动回滚，如果商品数量够的话就会把价格在原先的基础上增加`100`元，重点就是要体现事务管理。
+
+### 4.2 `Spring`使用配置文件的事务
+
+本质是使用`Spring`两大机制 - 控制反转`IOC`和面向切面编程`AOP`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+    <typeAliases>
+        <package name="com.zwm.pojo"/>
+    </typeAliases>
+    <mappers>
+        <mapper resource="mapper/GoodsMapper.xml"/>
+    </mappers>
+</configuration>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <context:property-placeholder location="jdbc.properties"/>
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+    </bean>
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="druidDataSource"/>
+        <property name="configLocation" value="mybatis21.xml"/>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"/>
+        <property name="basePackage" value="com.zwm.mapper"/>
+    </bean>
+    <bean id="goodsService" class="com.zwm.service.impl.GoodsServiceImpl">
+        <property name="goodsMapper" ref="goodsMapper"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="druidDataSource"/>
+    </bean>
+    <!--定义通知-->
+    <tx:advice id="buyAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="buy" isolation="REPEATABLE_READ" propagation="REQUIRED" timeout="-1"
+                       rollback-for="com.zwm.exception.GoodsNullPointerException, com.zwm.exception.GoodsNotEnoughException"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <!--定义切入点-->
+        <aop:pointcut id="goodsServicePointcut"
+                      expression="execution(* com.zwm.service.impl.GoodsServiceImpl.buy(..))"/>
+        <!--使用通知织入至切入点-->
+        <aop:advisor advice-ref="buyAdvice" pointcut-ref="goodsServicePointcut"/>
+    </aop:config>
+</beans>
+```
+

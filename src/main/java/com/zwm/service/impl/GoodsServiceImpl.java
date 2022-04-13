@@ -1,7 +1,7 @@
 package com.zwm.service.impl;
 
-import com.zwm.execption.GoodsNotEnoughException;
-import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.exception.GoodsNotEnoughException;
+import com.zwm.exception.GoodsNullPointerException;
 import com.zwm.mapper.GoodsMapper;
 import com.zwm.pojo.Goods;
 import com.zwm.service.GoodsService;

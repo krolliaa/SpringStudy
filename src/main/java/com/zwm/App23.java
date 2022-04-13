@@ -9,13 +9,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.List;
 
-public class App22 {
+public class App23 {
     public static void main(String[] args) throws GoodsNotEnoughException, GoodsNullPointerException {
-        String springConfig = "applicationContext20.xml";
+        String springConfig = "applicationContext21.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
         GoodsService goodsService = (GoodsService) applicationContext.getBean("goodsService");
         List<Goods> goodsList = goodsService.selectAllGoods();
         for (Goods goods : goodsList) System.out.println(goods.toString());
-        goodsService.buy(1001, 0);
+        goodsService.buy(1001, 3);
     }
 }
