@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwm.mapper.GoodsMapper">
+    <select id="selectAllGoods" resultType="goods">
+        select *
+        from goods;
+    </select>
+    <select id="selectGoodsById" resultType="goods">
+        select *
+        from goods
+        where id = #{id}
+    </select>
+    <update id="updateGoodsPriceById">
+        update goods set price = #{price} where id = #{id}
+    </update>
+</mapper>

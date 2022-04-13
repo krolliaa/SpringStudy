@@ -2098,6 +2098,191 @@ public class App21 {
 
 ### 4.1 `Spring`使用注解的事务
 
+从最底层业务：`Mapper`然后写`SQL`开始做起`GoodsMapper.java GoodsMapper.xml`写起，然后到业务层`GoodsService[interface] GoodsServiceImpl.java`最后到逻辑层，因为这里还没有搞到`SpringMVC`所以先不搞逻辑层，最后就是测试类`App22.java`，搞完了以后还需要写`MyBatis`的配置文件：`mybatis20.xml`，还有就是`Spring`的配置文件：`applicationContext20.xml`，附加一个`jdbc.properties`，除此之外还定义了两个异常类用于`GoodsServiceImpl`
+
 ```java
+package com.zwm.mapper;
+
+import com.zwm.pojo.Goods;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface GoodsMapper {
+    public abstract List<Goods> selectAllGoods();
+
+    public abstract Goods selectGoodsById(int id);
+
+    public abstract int updateGoodsPriceById(@Param("id") int id, @Param("price") int price);
+}
 ```
 
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zwm.mapper.GoodsMapper">
+    <select id="selectAllGoods" resultType="goods">
+        select *
+        from goods;
+    </select>
+    <select id="selectGoodsById" resultType="goods">
+        select *
+        from goods
+        where id = #{id}
+    </select>
+    <update id="updateGoodsPriceById">
+        update goods set price = #{price} where id = #{id}
+    </update>
+</mapper>
+```
+
+```java
+package com.zwm.service;
+
+import com.zwm.execption.GoodsNotEnoughException;
+import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.pojo.Goods;
+
+import java.util.List;
+
+public interface GoodsService {
+    public abstract List<Goods> selectAllGoods();
+
+    public abstract Goods selectGoodsById(int id);
+
+    public abstract Goods buy(int id, int amount) throws GoodsNullPointerException, GoodsNotEnoughException;
+
+    public abstract int updateGoodsPriceById(int id);
+}
+```
+
+```java
+package com.zwm.service.impl;
+
+import com.zwm.execption.GoodsNotEnoughException;
+import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.mapper.GoodsMapper;
+import com.zwm.pojo.Goods;
+import com.zwm.service.GoodsService;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+public class GoodsServiceImpl implements GoodsService {
+
+    private GoodsMapper goodsMapper;
+
+    public void setGoodsMapper(GoodsMapper goodsMapper) {
+        this.goodsMapper = goodsMapper;
+    }
+
+    @Override
+    public List<Goods> selectAllGoods() {
+        return goodsMapper.selectAllGoods();
+    }
+
+    @Override
+    public Goods selectGoodsById(int id) {
+        return goodsMapper.selectGoodsById(id);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED, timeout = -1, rollbackFor = {GoodsNotEnoughException.class, GoodsNullPointerException.class})
+    public Goods buy(int id, int amount) throws GoodsNullPointerException, GoodsNotEnoughException {
+        Goods goods = this.selectGoodsById(id);
+        if (goods == null) {
+            throw new GoodsNullPointerException("无此商品");
+        }
+        //更改价格
+        this.updateGoodsPriceById(id);
+        if (goods.getAmount() < amount) {
+            throw new GoodsNotEnoughException("商品数量不足，无法更改价格");
+        }
+        return goods;
+    }
+
+    @Override
+    public int updateGoodsPriceById(int id) {
+        int price = goodsMapper.selectGoodsById(id).getPrice() + 100;
+        return goodsMapper.updateGoodsPriceById(id, price);
+    }
+}
+```
+
+```java
+package com.zwm;
+
+import com.zwm.execption.GoodsNotEnoughException;
+import com.zwm.execption.GoodsNullPointerException;
+import com.zwm.pojo.Goods;
+import com.zwm.service.GoodsService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.List;
+
+public class App22 {
+    public static void main(String[] args) throws GoodsNotEnoughException, GoodsNullPointerException {
+        String springConfig = "applicationContext20.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
+        GoodsService goodsService = (GoodsService) applicationContext.getBean("goodsService");
+        List<Goods> goodsList = goodsService.selectAllGoods();
+        for (Goods goods : goodsList) System.out.println(goods.toString());
+        goodsService.buy(1001, 0);
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+    <typeAliases>
+        <package name="com.zwm.pojo"/>
+    </typeAliases>
+    <mappers>
+        <mapper resource="mapper/GoodsMapper.xml"/>
+    </mappers>
+</configuration>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <context:property-placeholder location="jdbc.properties"/>
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+    </bean>
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="mybatis20.xml"/>
+        <property name="dataSource" ref="druidDataSource"/>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"/>
+        <property name="basePackage" value="com.zwm.mapper"/>
+    </bean>
+    <bean id="goodsService" class="com.zwm.service.impl.GoodsServiceImpl">
+        <property name="goodsMapper" ref="goodsMapper"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="druidDataSource"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
+```
+
+这些个代码的具体含义就是如果商品数量不够传递的，就无法更改价格，因为有事务管理所以会自动回滚，如果商品数量够的话就会把价格在原先的基础上增加`100`元，重点就是要体现事务管理。
