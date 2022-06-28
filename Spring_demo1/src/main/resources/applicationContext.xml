@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="mySchool" class="com.kk.pojo.School">
+        <property name="name" value="华南理工大学"/>
+        <property name="address" value="广州市天河区五山"/>
+    </bean>
+    <bean id="student1" class="com.kk.pojo.Student" autowire="byType">
+        <property name="name" value="张三"/>
+        <property name="age" value="100"/>
+        <property name="school" ref="mySchool"/>
+    </bean>
+    <bean id="student2" class="com.kk.pojo.Student">
+        <constructor-arg name="name" value="李四"/>
+        <constructor-arg name="age" value="200"/>
+        <constructor-arg name="school" ref="mySchool"/>
+    </bean>
+    <bean id="student3" class="com.kk.pojo.Student">
+        <constructor-arg index="0" value="王五"/>
+        <constructor-arg index="1" value="300"/>
+        <constructor-arg index="2" ref="mySchool"/>
+    </bean>
+    <bean id="student4" class="com.kk.pojo.Student">
+        <constructor-arg value="赵六"/>
+        <constructor-arg value="400"/>
+        <constructor-arg ref="mySchool"/>
+    </bean>
+</beans>

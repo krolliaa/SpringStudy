@@ -63,32 +63,32 @@
 </project>
 ```
 
-`SomeService`接口：
+`com.kk.SomeService`接口：
 
 ```java
 package com.zwm.service;
 
-public interface SomeService {
+public interface com.kk.SomeService {
     public abstract void doSome();
 }
 ```
 
-`SomeServiceImpl`实现类：
+`com.kk.SomeServiceImpl`实现类：
 
 ```java
 package com.zwm.service.impl;
 
-import com.zwm.service.SomeService;
+import com.zwm.service.com.kk.SomeService;
 
-public class SomeServiceImpl implements SomeService {
+public class com.kk.SomeServiceImpl implements com.kk.SomeService {
 
-    public SomeServiceImpl() {
-        System.out.println("执行 SomeServiceImpl 中的无参构造方法");
+    public com.kk.SomeServiceImpl() {
+        System.out.println("执行 com.kk.SomeServiceImpl 中的无参构造方法");
     }
 
     @Override
     public void doSome() {
-        System.out.println("执行 SomeServiceImpl 中的 doSome() 方法");
+        System.out.println("执行 com.kk.SomeServiceImpl 中的 doSome() 方法");
     }
 }
 ```
@@ -99,8 +99,8 @@ public class SomeServiceImpl implements SomeService {
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="someService0" class="com.zwm.service.impl.SomeServiceImpl"/>
-    <bean id="someService1" class="com.zwm.service.impl.SomeServiceImpl"/>
+    <bean id="someService0" class="com.zwm.service.impl.com.kk.SomeServiceImpl"/>
+    <bean id="someService1" class="com.zwm.service.impl.com.kk.SomeServiceImpl"/>
     <bean id="date" class="java.util.Date"/>
 </beans>
 ```
@@ -110,7 +110,7 @@ public class SomeServiceImpl implements SomeService {
 ```java
 package com.zwm;
 
-import com.zwm.service.impl.SomeServiceImpl;
+import com.zwm.service.impl.com.kk.SomeServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -124,8 +124,8 @@ public class App {
         System.out.println("Hello World!");
         String springConfig = "applicationContext.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
-        SomeServiceImpl someService0 = (SomeServiceImpl) applicationContext.getBean("someService0");
-        SomeServiceImpl someService1 = (SomeServiceImpl) applicationContext.getBean("someService1");
+        com.kk.SomeServiceImpl someService0 = (com.kk.SomeServiceImpl) applicationContext.getBean("someService0");
+        com.kk.SomeServiceImpl someService1 = (com.kk.SomeServiceImpl) applicationContext.getBean("someService1");
         someService0.doSome();
         someService1.doSome();
         Date date = (Date) applicationContext.getBean("date");
@@ -1349,26 +1349,26 @@ String，第二个参数数据类型为任意数据类型： execution(* joke(St
 </project>
 ```
 
-`SomeService`主业务逻辑代码接口实现：
+`com.kk.SomeService`主业务逻辑代码接口实现：
 
 ```java
 package com.zwm.service;
 
-public interface SomeService {
+public interface com.kk.SomeService {
     public abstract void doSome(String name, int age);
 
     public abstract void doOther();
 }
 ```
 
-`SomeServiceImpl`接口实现类：
+`com.kk.SomeServiceImpl`接口实现类：
 
 ```java
 package com.zwm.service.impl;
 
-import com.zwm.service.SomeService;
+import com.zwm.service.com.kk.SomeService;
 
-public class SomeServiceImpl implements SomeService {
+public class com.kk.SomeServiceImpl implements com.kk.SomeService {
     @Override
     public void doSome(String name, int age) {
         System.out.println("========SomeService的doSome()方法========");
@@ -1394,7 +1394,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class MyBeforeAspect {
-    @Before(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    @Before(value = "execution(* com.zwm.service.impl.com.kk.SomeServiceImpl.doSome(..))")
     public void myBefore(JoinPoint joinPoint) {
         System.out.println("前置通知获取方法全类名：" + joinPoint.getSignature());
     }
@@ -1419,8 +1419,8 @@ public class MyBeforeAspect {
 ```java
 package com.zwm;
 
-import com.zwm.service.SomeService;
-import com.zwm.service.impl.SomeServiceImpl;
+import com.zwm.service.com.kk.SomeService;
+import com.zwm.service.impl.com.kk.SomeServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -1428,7 +1428,7 @@ public class App14 {
     public static void main(String[] args) {
         String springConfig = "applicationContext14.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
-        SomeService someService = (SomeServiceImpl) applicationContext.getBean("someServiceImpl");
+        com.kk.SomeService someService = (com.kk.SomeServiceImpl) applicationContext.getBean("someServiceImpl");
         someService.doSome("ABC", 3);
     }
 }
@@ -1453,7 +1453,7 @@ import java.util.Date;
 @Aspect
 @Component
 public class MyAfterReturningAspect {
-    @AfterReturning(value = "execution(* com.zwm.service.impl.SomeServiceImpl.*(..))", returning = "student")
+    @AfterReturning(value = "execution(* com.zwm.service.impl.com.kk.SomeServiceImpl.*(..))", returning = "student")
     public void myAfterReturning(JoinPoint joinPoint, Student student) {
         System.out.println("该方法的全类名 - 后置通知获取：" + joinPoint.getSignature());
         System.out.println("该方法的方法名 - 后置通知获取：" + joinPoint.getSignature().getName());
@@ -1490,8 +1490,8 @@ public class MyAfterReturningAspect {
 package com.zwm;
 
 import com.zwm.pojo.Student;
-import com.zwm.service.SomeService;
-import com.zwm.service.impl.SomeServiceImpl;
+import com.zwm.service.com.kk.SomeService;
+import com.zwm.service.impl.com.kk.SomeServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -1499,7 +1499,7 @@ public class App15 {
     public static void main(String[] args) {
         String springConfig = "applicationContext15.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
-        SomeService someService = (SomeServiceImpl) applicationContext.getBean("someServiceImpl");
+        com.kk.SomeService someService = (com.kk.SomeServiceImpl) applicationContext.getBean("someServiceImpl");
         Student student = someService.doSome("ABC", 3);
         System.out.println("执行 doSome 方法返回的数据：" + student.toString());
     }
@@ -1528,8 +1528,8 @@ public class App15 {
 ```java
 package com.zwm;
 
-import com.zwm.service.SomeService;
-import com.zwm.service.impl.SomeServiceImpl;
+import com.zwm.service.com.kk.SomeService;
+import com.zwm.service.impl.com.kk.SomeServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -1537,7 +1537,7 @@ public class App16 {
     public static void main(String[] args) {
         String springConfig = "applicationContext16.xml";
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springConfig);
-        SomeService someService = (SomeServiceImpl) applicationContext.getBean("someServiceImpl");
+        com.kk.SomeService someService = (com.kk.SomeServiceImpl) applicationContext.getBean("someServiceImpl");
         Object result = (Object) someService.doSome("ABC", 3);
         System.out.println(result);
     }
@@ -1561,7 +1561,7 @@ import java.util.Date;
 @Aspect
 @Component
 public class MyAroundAspect {
-    @Around(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    @Around(value = "execution(* com.zwm.service.impl.com.kk.SomeServiceImpl.doSome(..))")
     public Object MyAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Object result = null;
         System.out.println("环绕通知方法执行前的时间：" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
@@ -1598,7 +1598,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class MyAfterThrowableAspect {
-    @AfterThrowing(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))", throwing = "throwable")
+    @AfterThrowing(value = "execution(* com.zwm.service.impl.com.kk.SomeServiceImpl.doSome(..))", throwing = "throwable")
     public void myAfterThrowable(Throwable throwable) throws InterruptedException {
         System.out.println("异常通知，方法执行抛出异常前执行：" + throwable.getMessage());
         Thread.sleep(3000);
@@ -1620,7 +1620,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class MyAfterAspect {
-    @After(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    @After(value = "execution(* com.zwm.service.impl.com.kk.SomeServiceImpl.doSome(..))")
     public void myAfterThrowable() {
         System.out.println("最终通知，最后且总是会执行的通知");
     }
@@ -1645,7 +1645,7 @@ public class MyPointCut {
         System.out.println("最终通知：最终总是会执行的方法");
     }
 
-    @Pointcut(value = "execution(* com.zwm.service.impl.SomeServiceImpl.doSome(..))")
+    @Pointcut(value = "execution(* com.zwm.service.impl.com.kk.SomeServiceImpl.doSome(..))")
     public void myPointcut() {
     }
 }
